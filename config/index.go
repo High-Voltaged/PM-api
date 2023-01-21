@@ -1,12 +1,5 @@
 package config
 
-type Mode int
-
-const (
-	DEV Mode = iota
-	PROD
-)
-
 type Config struct {
 	Server struct {
 		Port string `mapstructure:"port"`

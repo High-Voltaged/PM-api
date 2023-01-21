@@ -1,7 +1,6 @@
 package types
 
 type UserRole string
-type Foo string
 
 const (
 	Admin UserRole = "ADMIN"
