@@ -1,0 +1,9 @@
+server:
+  port: 8080
+  host: localhost
+db:
+  port: 5432
+  host: localhost
+  name: your_name
+  username: your_username
+  password: your_password
