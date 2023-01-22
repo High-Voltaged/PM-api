@@ -12,6 +12,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
+func Connect(cfg *config.Config) (client *ent.Client) {
+	client = Initialize(cfg)
+	CreateDBSchema(client)
+	return
+}
+
 func Initialize(cfg *config.Config) *ent.Client {
 	// var DSN = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True", // for mysql
 	var DSN = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s",
