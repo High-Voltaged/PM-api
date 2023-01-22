@@ -50,6 +50,6 @@ func readEnv() (cfg config.Config) {
 func main() {
 	var cfg = readEnv()
 	client := db.Initialize(&cfg)
-	db.Migrate(client)
+	db.CreateDBSchema(client)
 	initRouter(&cfg)
 }

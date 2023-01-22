@@ -8,16 +8,18 @@ import (
 	"fmt"
 	"log"
 
+	// _ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 )
 
 func Initialize(cfg *config.Config) *ent.Client {
-	var DSN = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
+	// var DSN = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True", // for mysql
+	var DSN = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s",
+		cfg.Database.Username,
+		cfg.Database.Password,
 		cfg.Database.Host,
 		cfg.Database.Port,
-		cfg.Database.Username,
 		cfg.Database.Name,
-		cfg.Database.Password,
 	)
 
 	client, err := ent.Open("postgres", DSN)
@@ -29,11 +31,9 @@ func Initialize(cfg *config.Config) *ent.Client {
 	return client
 }
 
-func Migrate(client *ent.Client) {
-	ctx := context.Background()
-
+func CreateDBSchema(client *ent.Client) {
 	err := client.Schema.Create(
-		ctx,
+		context.Background(),
 		migrate.WithDropIndex(true),
 		migrate.WithDropColumn(true),
 	)
