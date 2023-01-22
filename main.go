@@ -11,5 +11,5 @@ func main() {
 
 	db.Connect(&cfg)
 
-	// routes.InitializeRouter(&cfg)
+	routes.InitializeRouter(&cfg)
 }
