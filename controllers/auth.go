@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"api/ent"
-	"api/requests"
+	req "api/requests"
 	"api/services"
 	"api/utils"
 	"net/http"
@@ -23,17 +23,22 @@ func (controller *AuthController) Login(c *gin.Context) {
 }
 
 func (c *AuthController) Register(ctx *gin.Context) {
-	var body requests.RegisterRequest
+	var body req.RegisterBody
 	err := ctx.ShouldBindJSON(&body)
+
 	if err != nil {
-		ctx.AbortWithStatusJSON(
+		utils.SendErrorResponse(ctx, utils.ClientError(
 			http.StatusBadRequest,
-			gin.H{"error": err.Error()},
+			err.Error()),
 		)
 		return
 	}
 
-	c.service.Register()
+	result, registerErr := c.service.Register(&body)
+	if registerErr != nil {
+		utils.SendErrorResponse(ctx, registerErr)
+		return
+	}
 
-	utils.SendResponse(ctx, "Here's your data", 200, body)
+	utils.SendResponse(ctx, http.StatusOK, result)
 }
