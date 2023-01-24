@@ -1,4 +1,4 @@
-package database
+package server
 
 import (
 	"api/config"
@@ -12,13 +12,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func Connect(cfg *config.Config) (client *ent.Client) {
-	client = Initialize(cfg)
-	CreateDBSchema(client)
+func InitializeDB(cfg *config.Config) (db *ent.Client) {
+	db = Connect(cfg)
+	CreateDBSchema(db)
 	return
 }
 
-func Initialize(cfg *config.Config) *ent.Client {
+func Connect(cfg *config.Config) *ent.Client {
 	// var DSN = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True", // for mysql
 	var DSN = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s",
 		cfg.Database.Username,

@@ -1,15 +1,11 @@
 package main
 
 import (
-	db "api/database"
-	"api/routes"
-	"api/utils"
+	"api/server"
 )
 
 func main() {
-	var cfg = utils.ReadEnv()
+	s := server.InitializeServer()
 
-	db.Connect(&cfg)
-
-	routes.InitializeRouter(&cfg)
+	s.Run()
 }
