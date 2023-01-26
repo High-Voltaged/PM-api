@@ -18,25 +18,42 @@ func NewAuthController(db *ent.Client) *AuthController {
 	return &AuthController{service: services.NewAuthService(db)}
 }
 
-func (controller *AuthController) Login(c *gin.Context) {
-	c.JSON(200, "It's all good!")
+func (c *AuthController) Login(ctx *gin.Context) {
+	var body req.LoginBody
+	jsonErr := ctx.ShouldBindJSON(&body)
+
+	if jsonErr != nil {
+		utils.SendErrorResponse(ctx, utils.ClientError(
+			http.StatusBadRequest,
+			jsonErr.Error(),
+		))
+		return
+	}
+
+	result, err := c.service.Login(&body)
+	if err != nil {
+		utils.SendErrorResponse(ctx, err)
+		return
+	}
+
+	utils.SendResponse(ctx, http.StatusOK, result)
 }
 
 func (c *AuthController) Register(ctx *gin.Context) {
 	var body req.RegisterBody
-	err := ctx.ShouldBindJSON(&body)
+	jsonErr := ctx.ShouldBindJSON(&body)
 
-	if err != nil {
+	if jsonErr != nil {
 		utils.SendErrorResponse(ctx, utils.ClientError(
 			http.StatusBadRequest,
-			err.Error()),
+			jsonErr.Error()),
 		)
 		return
 	}
 
-	result, registerErr := c.service.Register(&body)
-	if registerErr != nil {
-		utils.SendErrorResponse(ctx, registerErr)
+	result, err := c.service.Register(&body)
+	if err != nil {
+		utils.SendErrorResponse(ctx, err)
 		return
 	}
 

@@ -4,9 +4,12 @@ import (
 	"api/ent"
 	"api/ent/user"
 	req "api/requests"
+	"api/tokens"
 	"api/utils"
 	"context"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthService struct {
@@ -16,6 +19,28 @@ type AuthService struct {
 
 func NewAuthService(db *ent.Client) *AuthService {
 	return &AuthService{db: db, ctx: context.Background()}
+}
+
+func (svc *AuthService) Login(body *req.LoginBody) (gin.H, *utils.Error) {
+	db := svc.db
+
+	entity, err := db.User.Query().Where(user.Email(body.Email)).First(svc.ctx)
+	if err != nil {
+		return nil, utils.ClientError(http.StatusNotFound, utils.INCORRECT_CREDENTIALS)
+	}
+
+	ok := utils.ComparePasswords(entity.Password, body.Password)
+	if !ok {
+		return nil, utils.ClientError(http.StatusUnauthorized, utils.INCORRECT_CREDENTIALS)
+	}
+
+	token, err := tokens.GenerateJWT(entity.ID)
+
+	if err != nil {
+		return nil, utils.ServerError(err)
+	}
+
+	return gin.H{"accessToken": token}, nil
 }
 
 func (svc *AuthService) Register(body *req.RegisterBody) (*ent.User, *utils.Error) {
