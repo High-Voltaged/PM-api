@@ -1,4 +1,4 @@
-package utils
+package response
 
 const (
 	USER_EXISTS           = "A user with this email already exists."

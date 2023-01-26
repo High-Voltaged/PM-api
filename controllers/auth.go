@@ -3,8 +3,8 @@ package controllers
 import (
 	"api/ent"
 	req "api/requests"
+	"api/response"
 	"api/services"
-	"api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	jsonErr := ctx.ShouldBindJSON(&body)
 
 	if jsonErr != nil {
-		utils.SendErrorResponse(ctx, utils.ClientError(
+		response.SendErrorResponse(ctx, response.ClientError(
 			http.StatusBadRequest,
 			jsonErr.Error(),
 		))
@@ -32,11 +32,11 @@ func (c *AuthController) Login(ctx *gin.Context) {
 
 	result, err := c.service.Login(&body)
 	if err != nil {
-		utils.SendErrorResponse(ctx, err)
+		response.SendErrorResponse(ctx, err)
 		return
 	}
 
-	utils.SendResponse(ctx, http.StatusOK, result)
+	response.SendResponse(ctx, http.StatusOK, result)
 }
 
 func (c *AuthController) Register(ctx *gin.Context) {
@@ -44,7 +44,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	jsonErr := ctx.ShouldBindJSON(&body)
 
 	if jsonErr != nil {
-		utils.SendErrorResponse(ctx, utils.ClientError(
+		response.SendErrorResponse(ctx, response.ClientError(
 			http.StatusBadRequest,
 			jsonErr.Error()),
 		)
@@ -53,9 +53,9 @@ func (c *AuthController) Register(ctx *gin.Context) {
 
 	result, err := c.service.Register(&body)
 	if err != nil {
-		utils.SendErrorResponse(ctx, err)
+		response.SendErrorResponse(ctx, err)
 		return
 	}
 
-	utils.SendResponse(ctx, http.StatusOK, result)
+	response.SendResponse(ctx, http.StatusOK, result)
 }

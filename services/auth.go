@@ -4,6 +4,7 @@ import (
 	"api/ent"
 	"api/ent/user"
 	req "api/requests"
+	"api/response"
 	"api/tokens"
 	"api/utils"
 	"context"
@@ -21,17 +22,17 @@ func NewAuthService(db *ent.Client) *AuthService {
 	return &AuthService{db: db, ctx: context.Background()}
 }
 
-func (svc *AuthService) Login(body *req.LoginBody) (gin.H, *utils.Error) {
+func (svc *AuthService) Login(body *req.LoginBody) (gin.H, *response.Error) {
 	db := svc.db
 
 	entity, err := db.User.Query().Where(user.Email(body.Email)).First(svc.ctx)
 	if err != nil {
-		return nil, utils.ClientError(http.StatusNotFound, utils.INCORRECT_CREDENTIALS)
+		return nil, response.ClientError(http.StatusNotFound, response.INCORRECT_CREDENTIALS)
 	}
 
 	ok := utils.ComparePasswords(entity.Password, body.Password)
 	if !ok {
-		return nil, utils.ClientError(http.StatusUnauthorized, utils.INCORRECT_CREDENTIALS)
+		return nil, response.ClientError(http.StatusUnauthorized, response.INCORRECT_CREDENTIALS)
 	}
 
 	token, err := tokens.GenerateJWT(tokens.UserClaims{
@@ -40,19 +41,19 @@ func (svc *AuthService) Login(body *req.LoginBody) (gin.H, *utils.Error) {
 	})
 
 	if err != nil {
-		return nil, utils.ServerError(err)
+		return nil, response.ServerError(err)
 	}
 
 	return gin.H{"accessToken": token}, nil
 }
 
-func (svc *AuthService) Register(body *req.RegisterBody) (*ent.User, *utils.Error) {
+func (svc *AuthService) Register(body *req.RegisterBody) (*ent.User, *response.Error) {
 	db := svc.db
 
 	users, _ := db.User.Query().Where(user.Email(body.Email)).All(svc.ctx)
 
 	if len(users) > 0 {
-		return nil, utils.ClientError(http.StatusBadRequest, utils.USER_EXISTS)
+		return nil, response.ClientError(http.StatusBadRequest, response.USER_EXISTS)
 	}
 
 	hashed := utils.HashPassword(body.Password)
@@ -62,7 +63,7 @@ func (svc *AuthService) Register(body *req.RegisterBody) (*ent.User, *utils.Erro
 		SetPassword(hashed).Save(svc.ctx)
 
 	if err != nil {
-		return nil, utils.ServerError(err)
+		return nil, response.ServerError(err)
 	}
 
 	return result, nil

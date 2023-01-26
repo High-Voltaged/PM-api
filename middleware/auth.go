@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"api/response"
 	"api/tokens"
-	"api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,13 +13,13 @@ func Authentication() gin.HandlerFunc {
 		token := ctx.GetHeader("Authorization")
 
 		if token == "" {
-			utils.SendErrorResponse(ctx, utils.ClientError(http.StatusBadRequest, utils.INVALID_TOKEN))
+			response.SendErrorResponse(ctx, response.ClientError(http.StatusBadRequest, response.INVALID_TOKEN))
 			return
 		}
 
 		data, err := tokens.ParseToken(token)
 		if err != nil {
-			utils.SendErrorResponse(ctx, utils.ClientError(http.StatusUnauthorized, utils.UNAUTHORIZED))
+			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, response.UNAUTHORIZED))
 			return
 		}
 
