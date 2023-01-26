@@ -49,7 +49,6 @@ func SendErrorResponse(ctx *gin.Context, err any) {
 	case *Error:
 		response = res
 	case error:
-		log.Println(res)
 		response = &Error{
 			Status:  http.StatusInternalServerError,
 			Message: res.Error(),

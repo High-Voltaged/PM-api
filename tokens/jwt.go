@@ -14,13 +14,19 @@ const (
 	DAYS_TO_EXPIRE_IN = 24
 )
 
-func GenerateJWT(id int) (string, error) {
+type UserClaims struct {
+	ID    int
+	Email string
+}
+
+func GenerateJWT(userClaims UserClaims) (string, error) {
 	expireAt := time.Now().Add(time.Duration(time.Hour) * DAYS_TO_EXPIRE_IN).Unix()
 	jwtSecret := viper.Get("jwt.secret").(string)
 
 	claims := jwt.MapClaims{
-		"nbf":     expireAt,
-		"user_id": id,
+		"exp":        expireAt,
+		"user_id":    userClaims.ID,
+		"user_email": userClaims.Email,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -34,11 +40,9 @@ func GenerateJWT(id int) (string, error) {
 	return accessToken, nil
 }
 
-func ParseToken(header string) (any, error) {
+func ParseToken(header string) (*UserClaims, error) {
 	accessToken := strings.SplitAfter(header, "Bearer")[1]
 	jwtSecret := viper.Get("jwt.secret").(string)
-
-	// log.Printf("access token: %s\n", accessToken)
 
 	result, err := jwt.Parse(strings.Trim(accessToken, " "), func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -47,12 +51,16 @@ func ParseToken(header string) (any, error) {
 		return []byte(jwtSecret), nil
 	})
 
-	// log.Printf("result: %v\n", result.Valid)
+	claims := result.Claims.(jwt.MapClaims)
+	data := UserClaims{
+		ID:    int(claims["user_id"].(float64)),
+		Email: claims["user_email"].(string),
+	}
 
 	if err != nil {
 		log.Println("An error occurred when parsing the JWT.")
 		return nil, err
 	}
 
-	return result, nil
+	return &data, nil
 }

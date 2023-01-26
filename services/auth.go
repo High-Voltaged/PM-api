@@ -34,7 +34,10 @@ func (svc *AuthService) Login(body *req.LoginBody) (gin.H, *utils.Error) {
 		return nil, utils.ClientError(http.StatusUnauthorized, utils.INCORRECT_CREDENTIALS)
 	}
 
-	token, err := tokens.GenerateJWT(entity.ID)
+	token, err := tokens.GenerateJWT(tokens.UserClaims{
+		ID:    entity.ID,
+		Email: entity.Email,
+	})
 
 	if err != nil {
 		return nil, utils.ServerError(err)
