@@ -4,19 +4,21 @@ import (
 	"api/response"
 	"api/tokens"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Authentication() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token := ctx.GetHeader("Authorization")
+		header := ctx.GetHeader("Authorization")
 
-		if token == "" {
+		if header == "" {
 			response.SendErrorResponse(ctx, response.ClientError(http.StatusBadRequest, response.INVALID_TOKEN))
 			return
 		}
 
+		token := strings.SplitAfter(header, "Bearer")[1]
 		data, err := tokens.ParseToken(token)
 		if err != nil {
 			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, response.UNAUTHORIZED))

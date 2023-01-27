@@ -1,9 +1,10 @@
 package server
 
 import (
+	"api/app"
 	"api/routes"
 )
 
-func InitializeRoutes(server *Server) {
-	routes.InitializeAuthRoutes(server.DB, server.Router)
+func InitializeRoutes(a *app.App) {
+	routes.InitializeAuthRoutes(a)
 }

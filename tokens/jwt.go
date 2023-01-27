@@ -40,11 +40,10 @@ func GenerateJWT(userClaims UserClaims) (string, error) {
 	return accessToken, nil
 }
 
-func ParseToken(header string) (*UserClaims, error) {
-	accessToken := strings.SplitAfter(header, "Bearer")[1]
+func ParseToken(token string) (*UserClaims, error) {
 	jwtSecret := viper.Get("jwt.secret").(string)
 
-	result, err := jwt.Parse(strings.Trim(accessToken, " "), func(t *jwt.Token) (interface{}, error) {
+	result, err := jwt.Parse(strings.Trim(token, " "), func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}

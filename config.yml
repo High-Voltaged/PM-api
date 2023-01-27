@@ -9,3 +9,9 @@ db:
   password: your_password
 jwt:
   secret: somesecrethere
+email:
+  host: smtp.somehost.io
+  port: 25
+  username: someusername
+  password: somepassword
+  from: someemail@gmail.com
