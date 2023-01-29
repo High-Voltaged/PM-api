@@ -2,11 +2,11 @@ package tokens
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -33,7 +33,7 @@ func GenerateJWT(userClaims UserClaims) (string, error) {
 	accessToken, err := token.SignedString([]byte(jwtSecret))
 
 	if err != nil {
-		log.Println("An error occurred when generating a JWT.")
+		log.Error("An error occurred when generating a JWT.")
 		return "", err
 	}
 
@@ -57,7 +57,7 @@ func ParseToken(token string) (*UserClaims, error) {
 	}
 
 	if err != nil {
-		log.Println("An error occurred when parsing the JWT.")
+		log.Error("An error occurred when parsing the JWT.")
 		return nil, err
 	}
 

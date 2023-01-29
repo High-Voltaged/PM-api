@@ -3,11 +3,12 @@ package middleware
 import (
 	"api/response"
 	"api/tokens"
-	"log"
+
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 func Authentication() gin.HandlerFunc {
@@ -22,7 +23,7 @@ func Authentication() gin.HandlerFunc {
 		token := strings.SplitAfter(header, "Bearer")[1]
 		data, err := tokens.ParseToken(token)
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, response.UNAUTHORIZED))
 			return
 		}

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"api/types"
-	"log"
 	"time"
 )
 
@@ -15,6 +14,5 @@ func BulkStrToDate(dates ...string) ([]time.Time, error) {
 		}
 		result = append(result, parsed)
 	}
-	log.Println(result)
 	return result, nil
 }

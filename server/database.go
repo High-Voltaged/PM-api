@@ -6,7 +6,9 @@ import (
 	"api/ent/migrate"
 	"context"
 	"fmt"
-	"log"
+	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	// _ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -30,9 +32,10 @@ func Connect(cfg *config.Config) *ent.Client {
 
 	client, err := ent.Open("postgres", DSN)
 	if err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
+		log.Errorf("Error connecting to the database: %v", err)
+		os.Exit(1)
 	}
-	log.Println("Connected to the database.")
+	log.Info("Connected to the database.")
 
 	return client
 }
@@ -45,7 +48,8 @@ func CreateDBSchema(client *ent.Client) {
 	)
 
 	if err != nil {
-		log.Fatalf("Error creating schema resources: %v", err)
+		log.Errorf("Error creating schema resources: %v", err)
+		os.Exit(1)
 	}
-	log.Println("Run auto-migration.")
+	log.Info("Run auto-migration.")
 }

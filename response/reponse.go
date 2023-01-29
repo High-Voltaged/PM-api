@@ -1,10 +1,10 @@
 package response
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 type Response struct {
@@ -25,7 +25,7 @@ func ClientError(status int, message string) *Error {
 
 func ServerError(err error) *Error {
 	if err != nil {
-		log.Printf("A server error occurred: %s\n", err.Error())
+		log.Errorf("A server error occurred: %s\n", err.Error())
 	}
 
 	return &Error{
@@ -57,6 +57,6 @@ func SendErrorResponse(ctx *gin.Context, err any) {
 		response = ServerError(nil)
 	}
 
-	log.Printf("An error occurred during the request:\n%s\n", response.Message)
+	log.Errorf("An error occurred during the request:\n%s\n", response.Message)
 	ctx.AbortWithStatusJSON(response.Status, response)
 }

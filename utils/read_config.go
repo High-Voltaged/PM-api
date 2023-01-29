@@ -2,8 +2,9 @@ package utils
 
 import (
 	"api/config"
-	"log"
+	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -15,12 +16,14 @@ func ReadEnv() (cfg config.Config) {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		log.Fatalf("Error reading env: %s\n", err)
+		log.Errorf("Error reading env: %s\n", err)
+		os.Exit(1)
 	}
 
 	err = viper.Unmarshal(&cfg)
 	if err != nil {
-		log.Fatalf("Error reading env: %s\n", err)
+		log.Errorf("Error reading env: %s\n", err)
+		os.Exit(1)
 	}
 	return
 }

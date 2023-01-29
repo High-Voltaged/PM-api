@@ -4,10 +4,12 @@ import (
 	"api/config"
 	"api/ent"
 	"fmt"
-	"log"
+	"os"
+
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 type App struct {
@@ -22,6 +24,7 @@ func (a *App) Run() {
 
 	err := http.ListenAndServe(addr, a.Router)
 	if err != nil {
-		log.Fatalf("Error starting the server: %s\n", err)
+		log.Errorf("Error starting the server: %s\n", err)
+		os.Exit(1)
 	}
 }
