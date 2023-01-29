@@ -25,3 +25,7 @@ var Priority = struct {
 }
 
 var PriorityValues = []string{Priority.LOW, Priority.MEDIUM, Priority.HIGH}
+
+const (
+	TIME_FORMAT = "2006-01-02"
+)

@@ -18,6 +18,7 @@ func NewAuthController(a *app.App) *AuthController {
 	return &AuthController{service: services.NewAuthService(a)}
 }
 
+// Login the user by generating an access token with their id & email
 func (c *AuthController) Login(ctx *gin.Context) {
 	var body req.LoginBody
 	jsonErr := ctx.ShouldBindJSON(&body)
@@ -39,6 +40,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	response.SendResponse(ctx, http.StatusOK, result)
 }
 
+// Register the user
 func (c *AuthController) Register(ctx *gin.Context) {
 	var body req.RegisterBody
 	jsonErr := ctx.ShouldBindJSON(&body)
@@ -60,6 +62,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	response.SendResponse(ctx, http.StatusOK, result)
 }
 
+// Generate a reset token and send it to the user's email
 func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 	var body req.ForgotPasswordBody
 	jsonErr := ctx.ShouldBindJSON(&body)
@@ -81,6 +84,7 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 	response.SendResponse(ctx, http.StatusOK, nil)
 }
 
+// Parse the received reset token and reset the password
 func (c *AuthController) ResetPassword(ctx *gin.Context) {
 	var body req.ResetPasswordBody
 	jsonErr := ctx.ShouldBindJSON(&body)

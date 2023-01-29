@@ -3,6 +3,7 @@ package middleware
 import (
 	"api/response"
 	"api/tokens"
+	"log"
 	"net/http"
 	"strings"
 
@@ -21,6 +22,7 @@ func Authentication() gin.HandlerFunc {
 		token := strings.SplitAfter(header, "Bearer")[1]
 		data, err := tokens.ParseToken(token)
 		if err != nil {
+			log.Println(err)
 			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, response.UNAUTHORIZED))
 			return
 		}
