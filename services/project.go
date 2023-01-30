@@ -13,6 +13,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 type ProjectService struct {
@@ -30,14 +31,20 @@ func NewProjectService(a *app.App) *ProjectService {
 }
 
 // Get all projects of the currently logged in user
-func (svc *ProjectService) GetAll(userId int) (gin.H, *response.Error) {
+func (svc *ProjectService) GetAll(userId int, opts ...utils.Pagination) (gin.H, *response.Error) {
 	db := svc.db
+
+	options := opts[0]
+	offset := utils.CalcPageOffset(options)
 
 	entities, err := db.Project.Query().
 		Where(project.HasUsersWith(user.ID(userId))).
+		Limit(options.Limit).Offset(offset).
+		Order(ent.Asc(options.Sort)).
 		All(svc.ctx)
 
 	if err != nil {
+		log.Error(err)
 		return nil, response.ClientError(http.StatusNotFound, response.PROJECTS_NOT_FOUND)
 	}
 

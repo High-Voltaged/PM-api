@@ -6,6 +6,7 @@ import (
 	"api/response"
 	"api/services"
 	"api/tokens"
+	"api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,10 @@ func (c *ProjectController) GetAll(ctx *gin.Context) {
 	user, _ := ctx.Get("user")
 	userId := user.(*tokens.UserClaims).ID
 
-	result, err := c.service.GetAll(userId)
+	query := ctx.Request.URL.Query()
+	options := utils.GetPaginationFromQuery(query)
+
+	result, err := c.service.GetAll(userId, options)
 	if err != nil {
 		response.SendErrorResponse(ctx, err)
 		return
