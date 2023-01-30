@@ -82,3 +82,15 @@ func (c *ProjectController) Update(ctx *gin.Context) {
 
 	response.SendResponse(ctx, http.StatusOK, nil)
 }
+
+func (c *ProjectController) Delete(ctx *gin.Context) {
+	projectId, _ := ctx.Get("project_id")
+
+	err := c.service.Delete(projectId.(int))
+	if err != nil {
+		response.SendErrorResponse(ctx, err)
+		return
+	}
+
+	response.SendResponse(ctx, http.StatusOK, nil)
+}

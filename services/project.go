@@ -94,3 +94,15 @@ func (svc *ProjectService) Update(body *req.ProjectBody, id int) *response.Error
 	}
 	return nil
 }
+
+// Delete a project by id
+func (svc *ProjectService) Delete(id int) *response.Error {
+	db := svc.db
+
+	err := db.Project.DeleteOneID(id).Exec(svc.ctx)
+
+	if err != nil {
+		return response.ServerError(err)
+	}
+	return nil
+}

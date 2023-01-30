@@ -17,4 +17,8 @@ func InitializeProjectRoutes(a *app.App) {
 		middleware.ProjectAuthorAuth(a.DB),
 		project.Update,
 	)
+	group.DELETE("/:id",
+		middleware.ProjectAuthorAuth(a.DB),
+		project.Delete,
+	)
 }
