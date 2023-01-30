@@ -57,6 +57,6 @@ func SendErrorResponse(ctx *gin.Context, err any) {
 		response = ServerError(nil)
 	}
 
-	log.Errorf("An error occurred during the request:\n%s\n", response.Message)
+	log.Errorf("An error occurred during the request: %s\n", response.Message)
 	ctx.AbortWithStatusJSON(response.Status, response)
 }

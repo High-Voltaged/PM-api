@@ -37,7 +37,7 @@ func (c *ProjectController) GetAll(ctx *gin.Context) {
 }
 
 func (c *ProjectController) Create(ctx *gin.Context) {
-	var body req.CreateProjectBody
+	var body req.ProjectBody
 	jsonErr := ctx.ShouldBindJSON(&body)
 
 	if jsonErr != nil {
@@ -52,6 +52,29 @@ func (c *ProjectController) Create(ctx *gin.Context) {
 	userId := user.(*tokens.UserClaims).ID
 
 	err := c.service.Create(&body, userId)
+	if err != nil {
+		response.SendErrorResponse(ctx, err)
+		return
+	}
+
+	response.SendResponse(ctx, http.StatusOK, nil)
+}
+
+func (c *ProjectController) Update(ctx *gin.Context) {
+	var body req.ProjectBody
+	jsonErr := ctx.ShouldBindJSON(&body)
+
+	if jsonErr != nil {
+		response.SendErrorResponse(ctx, response.ClientError(
+			http.StatusBadRequest,
+			jsonErr.Error(),
+		))
+		return
+	}
+
+	projectId, _ := ctx.Get("project_id")
+
+	err := c.service.Update(&body, projectId.(int))
 	if err != nil {
 		response.SendErrorResponse(ctx, err)
 		return

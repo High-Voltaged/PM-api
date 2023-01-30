@@ -7,10 +7,14 @@ import (
 )
 
 func InitializeProjectRoutes(a *app.App) {
-	group := a.Router.Group("/projects", middleware.Authentication())
+	group := a.Router.Group("/projects", middleware.Authentication(a.DB))
 
 	project := controllers.NewProjectController(a)
 
 	group.GET("/", project.GetAll)
 	group.POST("/", project.Create)
+	group.PATCH("/:id",
+		middleware.ProjectAuthorAuth(a.DB),
+		project.Update,
+	)
 }

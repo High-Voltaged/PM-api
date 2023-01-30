@@ -56,7 +56,7 @@ func (svc *ProjectService) GetAll(userId int, opts ...utils.Pagination) (gin.H, 
 }
 
 // Create a new project for the currently logged in user & set them as the creator
-func (svc *ProjectService) Create(body *req.CreateProjectBody, userId int) *response.Error {
+func (svc *ProjectService) Create(body *req.ProjectBody, userId int) *response.Error {
 	db := svc.db
 
 	dateInterval, err := utils.BulkStrToDate(body.Start_at, body.End_at)
@@ -68,6 +68,26 @@ func (svc *ProjectService) Create(body *req.CreateProjectBody, userId int) *resp
 		SetStartAt(dateInterval[0]).SetEndAt(dateInterval[1]).
 		SetCreator(userId).
 		AddUserIDs(userId).Save(svc.ctx)
+
+	if err != nil {
+		return response.ServerError(err)
+	}
+	return nil
+}
+
+// Update a project by id
+func (svc *ProjectService) Update(body *req.ProjectBody, id int) *response.Error {
+	db := svc.db
+
+	dateInterval, err := utils.BulkStrToDate(body.Start_at, body.End_at)
+	if err != nil {
+		return response.ClientError(http.StatusBadRequest, "invalid date format")
+	}
+
+	_, err = db.Project.UpdateOneID(id).
+		SetName(body.Name).SetDescription(body.Description).
+		SetStartAt(dateInterval[0]).SetEndAt(dateInterval[1]).
+		Save(svc.ctx)
 
 	if err != nil {
 		return response.ServerError(err)

@@ -2,8 +2,11 @@ package middleware
 
 import (
 	"api/consts"
+	"api/ent"
+	"api/ent/user"
 	"api/response"
 	"api/tokens"
+	"context"
 
 	"net/http"
 	"strings"
@@ -12,7 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Authentication() gin.HandlerFunc {
+func Authentication(db *ent.Client) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		header := ctx.GetHeader("Authorization")
 
@@ -26,6 +29,15 @@ func Authentication() gin.HandlerFunc {
 		if err != nil {
 			log.Error(err)
 			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, consts.UNAUTHORIZED))
+			return
+		}
+
+		exists, _ := db.User.Query().
+			Where(user.ID(data.ID)).
+			Exist(context.Background())
+
+		if !exists {
+			response.SendErrorResponse(ctx, response.ClientError(http.StatusNotFound, consts.USER_NOEXIST))
 			return
 		}
 
