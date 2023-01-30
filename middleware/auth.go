@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"api/consts"
 	"api/response"
 	"api/tokens"
 
@@ -16,7 +17,7 @@ func Authentication() gin.HandlerFunc {
 		header := ctx.GetHeader("Authorization")
 
 		if header == "" {
-			response.SendErrorResponse(ctx, response.ClientError(http.StatusBadRequest, response.INVALID_TOKEN))
+			response.SendErrorResponse(ctx, response.ClientError(http.StatusBadRequest, consts.INVALID_TOKEN))
 			return
 		}
 
@@ -24,7 +25,7 @@ func Authentication() gin.HandlerFunc {
 		data, err := tokens.ParseToken(token)
 		if err != nil {
 			log.Error(err)
-			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, response.UNAUTHORIZED))
+			response.SendErrorResponse(ctx, response.ClientError(http.StatusUnauthorized, consts.UNAUTHORIZED))
 			return
 		}
 

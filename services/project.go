@@ -3,6 +3,7 @@ package services
 import (
 	"api/app"
 	"api/config"
+	"api/consts"
 	"api/ent"
 	"api/ent/project"
 	"api/ent/user"
@@ -45,7 +46,7 @@ func (svc *ProjectService) GetAll(userId int, opts ...utils.Pagination) (gin.H, 
 
 	if err != nil {
 		log.Error(err)
-		return nil, response.ClientError(http.StatusNotFound, response.PROJECTS_NOT_FOUND)
+		return nil, response.ClientError(http.StatusNotFound, consts.PROJECTS_NOT_FOUND)
 	}
 
 	result := gin.H{

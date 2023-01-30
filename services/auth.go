@@ -3,6 +3,7 @@ package services
 import (
 	"api/app"
 	"api/config"
+	"api/consts"
 	"api/ent"
 	"api/ent/user"
 	req "api/requests"
@@ -34,12 +35,12 @@ func (svc *AuthService) Login(body *req.LoginBody) (gin.H, *response.Error) {
 
 	entity, err := db.User.Query().Where(user.Email(body.Email)).First(svc.ctx)
 	if err != nil {
-		return nil, response.ClientError(http.StatusNotFound, response.INCORRECT_CREDENTIALS)
+		return nil, response.ClientError(http.StatusNotFound, consts.INCORRECT_CREDENTIALS)
 	}
 
 	ok := utils.ComparePasswords(entity.Password, body.Password)
 	if !ok {
-		return nil, response.ClientError(http.StatusUnauthorized, response.INCORRECT_CREDENTIALS)
+		return nil, response.ClientError(http.StatusUnauthorized, consts.INCORRECT_CREDENTIALS)
 	}
 
 	token, err := tokens.GenerateJWT(tokens.UserClaims{
@@ -60,7 +61,7 @@ func (svc *AuthService) Register(body *req.RegisterBody) (*ent.User, *response.E
 	users, _ := db.User.Query().Where(user.Email(body.Email)).All(svc.ctx)
 
 	if len(users) > 0 {
-		return nil, response.ClientError(http.StatusBadRequest, response.USER_EXISTS)
+		return nil, response.ClientError(http.StatusBadRequest, consts.USER_EXISTS)
 	}
 
 	hashed := utils.HashPassword(body.Password)
@@ -81,7 +82,7 @@ func (svc *AuthService) ForgotPassword(body *req.ForgotPasswordBody) *response.E
 
 	entity, err := db.User.Query().Where(user.Email(body.Email)).First(svc.ctx)
 	if err != nil {
-		return response.ClientError(http.StatusNotFound, response.INCORRECT_CREDENTIALS)
+		return response.ClientError(http.StatusNotFound, consts.INCORRECT_CREDENTIALS)
 	}
 
 	token, err := tokens.GenerateJWT(tokens.UserClaims{
@@ -106,7 +107,7 @@ func (svc *AuthService) ResetPassword(param string, body *req.ResetPasswordBody)
 
 	userClaims, err := tokens.ParseToken(param)
 	if err != nil {
-		return response.ClientError(http.StatusBadRequest, response.INVALID_RESET_TOKEN)
+		return response.ClientError(http.StatusBadRequest, consts.INVALID_RESET_TOKEN)
 	}
 
 	id := userClaims.ID
@@ -114,7 +115,7 @@ func (svc *AuthService) ResetPassword(param string, body *req.ResetPasswordBody)
 
 	_, err = db.User.UpdateOneID(id).SetPassword(password).Save(svc.ctx)
 	if err != nil {
-		return response.ClientError(http.StatusNotFound, response.USER_NOEXIST)
+		return response.ClientError(http.StatusNotFound, consts.USER_NOEXIST)
 	}
 
 	return nil
